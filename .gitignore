@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+.Python
+
+# Virtual environment
+venv/
+.venv/
+
+# Jupyter and IPython
+.ipynb_checkpoints/
+
+# Logs and debug
+*.log
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Flask instance folder
+instance/
+
+# macOS
+.DS_Store
+
+# VSCode settings
+.vscode/
+
+# System files
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# Image/video/model files (optional—add only if you don’t want to push them)
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.h5
+*.tflite
+*.pb
+*.onnx
+
+# Codespaces
+.devcontainer/

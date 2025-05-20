@@ -1,0 +1,64 @@
+/* Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* Heading */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #00bcd4;
+}
+
+/* Video Container */
+.video-container {
+    position: relative;
+    border: 2px solid #00bcd4;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+    margin-bottom: 1rem;
+}
+
+#video,
+#videoFeed {
+    width: 640px;
+    height: 480px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Emotion Text */
+#emotionText {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    background: #1e1e1e;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #333;
+    color: #f0f0f0;
+    box-shadow: inset 0 0 5px #00bcd4;
+}
+
+/* Responsive */
+@media screen and (max-width: 700px) {
+    #video,
+    #videoFeed {
+        width: 100%;
+        height: auto;
+    }
+}
