@@ -9,12 +9,13 @@ navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
 
 // Capture and send frame every 2 seconds
 setInterval(() => {
+    if (video.videoWidth === 0 || video.videoHeight === 0) return;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0);
 
     const imageData = canvas.toDataURL('image/jpeg');
-
+    const startTime = performance.now();
     fetch('/detect_emotion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -22,6 +23,8 @@ setInterval(() => {
     })
     .then(res => res.json())
     .then(data => {
+        const duration = (performance.now() - startTime).toFixed(2);
+        console.log(`Emotion detected: ${data.emotion} (took ${duration}ms)`);
         emotionText.textContent = `Current Emotion: ${data.emotion}`;
     });
 }, 2000);
