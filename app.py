@@ -3,7 +3,7 @@ import onnxruntime as ort
 from flask import Flask, request, jsonify
 import base64
 import cv2
-
+from flask import send_from_directory
 app = Flask(__name__)
 
 # Load ONNX model
@@ -27,6 +27,10 @@ def preprocess_image(image_bytes):
 def softmax(x):
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum(axis=1, keepdims=True)
+
+@app.route('/')
+def serve_index():
+    return send_from_directory('static', 'index.html')
 
 @app.route('/detect_emotion', methods=['POST'])
 def detect_emotion():
