@@ -24,7 +24,13 @@ setInterval(() => {
     .then(res => res.json())
     .then(data => {
         const duration = (performance.now() - startTime).toFixed(2);
-        console.log(`Emotion detected: ${data.emotion} (took ${duration}ms)`);
-        emotionText.textContent = `Current Emotion: ${data.emotion}`;
-    });
+    console.log(`Emotion detected: ${data.emotion} (took ${duration}ms)`);
+    if ('confidence' in data) {
+        console.log(`Confidence: ${(data.confidence * 100).toFixed(2)}%`);
+    }
+    if ('raw_probabilities' in data) {
+        console.log('All probabilities:', data.raw_probabilities);
+    }
+    emotionText.textContent = `Current Emotion: ${data.emotion}`;
+});
 }, 2000);

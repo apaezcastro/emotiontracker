@@ -48,7 +48,8 @@ def detect_emotion():
         raw_output = session.run(None, inputs)[0]
         probs = softmax(raw_output)
         top_idx = np.argmax(probs)
-        return jsonify({'emotion': emotion_table[top_idx], 'confidence': float(probs[0][top_idx])})
+        return jsonify({'emotion': emotion_table[top_idx],'confidence': float(probs[0][top_idx]),'raw_probabilities': probs[0].tolist()})
+
     except Exception as e:
         print("Error:", e)
         return jsonify({'error': 'Detection failed'}), 500
