@@ -30,7 +30,7 @@ def softmax(x):
 
 @app.route('/')
 def serve_index():
-    return send_from_directory('static', 'index.html')
+    return send_from_directory('templates', 'index.html')
 
 @app.route('/detect_emotion', methods=['POST'])
 def detect_emotion():
