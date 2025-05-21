@@ -21,6 +21,7 @@ def preprocess_image(image_bytes):
         return None
     img = cv2.resize(img, (64, 64))
     img = img.astype(np.float32)
+    img /= 255.0
     img = img[np.newaxis, np.newaxis, :, :]  # shape (1,1,64,64)
     return img
 
