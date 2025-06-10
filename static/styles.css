@@ -1,64 +1,85 @@
-/* Base Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #f0f0f0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    padding: 2rem;
+  font-family: Arial, sans-serif;
+  background: #121212;
+  color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
 }
 
-/* Heading */
-h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    color: #00bcd4;
+header {
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
-/* Video Container */
-.video-container {
-    position: relative;
-    border: 2px solid #00bcd4;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-    margin-bottom: 1rem;
+header p {
+  margin-top: 0.5rem;
 }
 
-#video,
-#videoFeed {
-    width: 640px;
-    height: 480px;
-    object-fit: cover;
-    display: block;
+.video-wrapper {
+  position: relative;
+  width: 640px;
+  max-width: 100%;
 }
 
-/* Emotion Text */
-#emotionText {
-    font-size: 1.2rem;
-    margin-top: 0.5rem;
-    background: #1e1e1e;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: 1px solid #333;
-    color: #f0f0f0;
-    box-shadow: inset 0 0 5px #00bcd4;
+#video {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
 }
 
-/* Responsive */
+.overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  color: #00bcd4;
+}
+
+/* Mobile */
 @media screen and (max-width: 700px) {
-    #video,
-    #videoFeed {
-        width: 100%;
-        height: auto;
-    }
+  .video-wrapper { width: 100%; }
+  .overlay { font-size: 1rem; }
+}
+
+/* Add this at the top or bottom of your existing file */
+
+/* Page background gradient */
+body {
+  background: linear-gradient(135deg, #1e2328, #2f3a4f);
+  transition: background 2s ease-in-out;
+  animation: bgShift 20s infinite alternate;
+}
+
+/* Animate background shift */
+@keyframes bgShift {
+  from   { background: linear-gradient(135deg, #1e2328, #2f3a4f); }
+  to     { background: linear-gradient(135deg, #2f3a4f, #413c58); }
+}
+
+/* Header text color animation */
+header h1 {
+  color: #00bcd4;
+  animation: hueRotate 5s infinite linear;
+}
+
+@keyframes hueRotate {
+  0%   { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* Overlay “pop” animation on emotion change */
+.overlay {
+  animation: pop 0.3s ease forwards;
+}
+
+@keyframes pop {
+  0%   { transform: translateX(-50%) scale(1); }
+  50%  { transform: translateX(-50%) scale(1.2); }
+  100% { transform: translateX(-50%) scale(1); }
 }

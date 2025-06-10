@@ -1,16 +1,28 @@
+<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Emotion Detection App</title>
-    <link rel="stylesheet" href="/static/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emotion Detection App</title>
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+  <header>
     <h1>Emotion Detection</h1>
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <p id="emotionText">Detecting emotion...</p>
+    <p>Possible emotions: <strong>neutral, happiness, surprise</strong></p>
+  </header>
 
-    <script src="/static/script.js"></script>
+  <div class="video-wrapper">
+    <video id="video" autoplay playsinline></video>
+    <div id="overlay" class="overlay">Detecting...</div>
+  </div>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+  <script src="/static/script.js"></script>
 </body>
 </html>
+<!-- templates/index.html -->
+<!-- This is the main HTML template for the Emotion Detection App -->
+<!-- It includes a video element for webcam feed, an overlay for detection status, and a canvas for drawing. -->
+<!-- The script.js file is linked at the end to ensure the DOM is fully loaded before executing JavaScript -->
