@@ -33,6 +33,7 @@ def preprocess_image(image_bytes):
     face_img = img[y:y+h, x:x+w]
 
     # Resize face to model input size
+    face_img = cv2.equalizeHist(face_img)
     face_img = cv2.resize(face_img, (64, 64))
     face_img = face_img.astype(np.float32)
     face_img = face_img[np.newaxis, np.newaxis, :, :]  # shape: (1, 1, 64, 64)
