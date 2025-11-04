@@ -59,7 +59,8 @@ jobs:
         with:
           app-name: 'andre-emotion-app'
           slot-name: 'Production'
-          images: 'index.docker.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_752189E51E5B4EE797824E0BDFB8CD74 }}/andrepaez23/emotion-app:${{ github.sha }}'
+          images: 'index.docker.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_752189E51E5B4EE797824E0BDFB8CD74 }}/emotion-app:${{ github.sha }}'
 
           
+
 
