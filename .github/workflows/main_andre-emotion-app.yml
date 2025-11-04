@@ -27,6 +27,11 @@ jobs:
           registry: index.docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Debug - Check username length
+        run: |
+          echo "Username length: ${#DOCKER_USERNAME}"
+          echo "Token length: ${#DOCKER_TOKEN}"
        
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
@@ -61,6 +66,7 @@ jobs:
           images: 'index.docker.io/${{ secrets.DOCKER_USERNAME }}/emotion-app:${{ github.sha }}'
 
           
+
 
 
 
