@@ -1,0 +1,63 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - andre-emotion-app
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read #This is required for actions/checkout
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to container registry
+        uses: docker/login-action@v2
+        with:
+          registry: index.docker.io/
+          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_752189E51E5B4EE797824E0BDFB8CD74 }}
+          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_718D79856B7846EE8C32B4915B556204 }}
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: index.docker.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_752189E51E5B4EE797824E0BDFB8CD74 }}/andrepaez23/emotion-app:${{ github.sha }}
+          file: ./Dockerfile
+
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
+    needs: build
+    
+    steps:
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2BE9B5FD36BB46FEA0EFE7DEBD86CAC2 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_65D2F3BC7B614481ACFA8B796524E65A }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6CE72A957DDE4D4E8E12C61B49831D86 }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'andre-emotion-app'
+          slot-name: 'Production'
+          images: 'index.docker.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_752189E51E5B4EE797824E0BDFB8CD74 }}/andrepaez23/emotion-app:${{ github.sha }}'
+          
