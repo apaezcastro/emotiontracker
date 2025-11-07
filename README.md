@@ -212,7 +212,3 @@ This project involved several key design decisions to achieve a stable, real-tim
 
   * **AI Model:** This project uses the `emotion-ferplus-8.onnx` model from the [ONNX Model Zoo](https://github.com/onnx/models/tree/main/vision/body_analysis/emotion_ferplus), which is trained on the FER+ dataset.
   * **Libraries:** This project would not be possible without the open-source work from OpenCV, Flask, ONNXRuntime, and NumPy.
-
-
-```
-```
