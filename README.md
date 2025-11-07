@@ -1,4 +1,3 @@
-````markdown
 # Real-Time Emotion and Face Detection App
 
 [![Build and deploy container app to Azure Web App - andre-emotion-app](https://github.com/apaezcastro/emotiontracker/actions/workflows/main_andre-emotion-app.yml/badge.svg)](https://github.com/apaezcastro/emotiontracker/actions/workflows/main_andre-emotion-app.yml)
