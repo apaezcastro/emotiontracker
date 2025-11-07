@@ -21,6 +21,7 @@ header p {
   position: relative;
   width: 640px;
   max-width: 100%;
+  height: auto;
 }
 
 #video {

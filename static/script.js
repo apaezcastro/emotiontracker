@@ -41,10 +41,20 @@ setInterval(() => {
 
 
     if (faceData && faceData.length > 0){
-      const x = faceData[0];
-      const y = faceData[1];
-      const w = faceData[2];
-      const h = faceData[3];
+      const naturalWidth = video.videoWidth;
+      const displayedWidth = video.clientWidth;
+      // calculate scale factor between natural and displayed size
+      const scale = displayedWidth / naturalWidth;
+      const x_original = faceData[0];
+      const y_original = faceData[1];
+      const w_original = faceData[2];
+      const h_original = faceData[3];
+
+      // scale the face coordinates to match displayed size
+      const x = x_original * scale;
+      const y = y_original * scale;
+      const w = w_original * scale;
+      const h = h_original * scale;
 
       overlay.style.left = x + 'px';
       overlay.style.top = y + 'px';
