@@ -83,4 +83,4 @@ setInterval(() => {
     overlay.textContent = 'Error';
     console.error('Detection error:', err);
   });
-}, 1000);
+}, 100);

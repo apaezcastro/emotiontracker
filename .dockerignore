@@ -1,0 +1,24 @@
+# Git
+.git
+.gitignore
+
+# Python
+venv/
+venv_quantize/
+*.venv
+__pycache__/
+*.pyc
+
+# Node.js
+node_modules/
+npm-debug.log
+
+# Frontend (assuming your frontend code is in a folder named 'frontend' or 'src')
+# !!! Change 'frontend' to whatever your frontend folder is named
+frontend/
+public/
+src/
+
+# OS files
+.DS_Store
+Thumbs.db

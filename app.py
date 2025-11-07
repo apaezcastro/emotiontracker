@@ -10,7 +10,7 @@ app = Flask(__name__)
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 # Load ONNX model
-session = ort.InferenceSession("emotion-ferplus-8.onnx", providers=["CPUExecutionProvider"])
+session = ort.InferenceSession("emotion-ferplus-8-quant.onnx", providers=["CPUExecutionProvider"])
 
 emotion_table = {
     0: 'neutral', 1: 'happiness', 2: 'surprise', 3: 'sadness',
