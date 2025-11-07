@@ -47,31 +47,19 @@ header p {
   .overlay { font-size: 1rem; }
 }
 
-/* Add this at the top or bottom of your existing file */
 
 /* Page background gradient */
 body {
   background: linear-gradient(135deg, #1e2328, #2f3a4f);
-  transition: background 2s ease-in-out;
-  animation: bgShift 20s infinite alternate;
 }
 
 /* Animate background shift */
-@keyframes bgShift {
-  from   { background: linear-gradient(135deg, #1e2328, #2f3a4f); }
-  to     { background: linear-gradient(135deg, #2f3a4f, #413c58); }
-}
 
 /* Header text color animation */
 header h1 {
   color: #00bcd4;
-  animation: hueRotate 5s infinite linear;
 }
 
-@keyframes hueRotate {
-  0%   { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
-}
 
 /* Overlay “pop” animation on emotion change */
 .overlay {
