@@ -37,7 +37,7 @@ def preprocess_image(image_bytes):
     face_img = cv2.resize(face_img, (64, 64))
     face_img = face_img.astype(np.float32)
     face_img = face_img[np.newaxis, np.newaxis, :, :]  # shape: (1, 1, 64, 64)
-    return face_img
+    return face_img, faces[0]
 
 def softmax(x):
     e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
@@ -59,7 +59,7 @@ def detect_emotion():
         with open("static/debug_frame.jpg", "wb") as f:
             f.write(img_data)
 
-        input_img = preprocess_image(img_data)
+        input_img,face_data = preprocess_image(img_data)
         if input_img is None:
             return jsonify({'error': 'Invalid image'}), 400
         debug_img = np.squeeze(input_img) * 255  # (64, 64) grayscale image
@@ -67,13 +67,9 @@ def detect_emotion():
         cv2.imwrite("static/debug_preprocessed.jpg", debug_img)
         inputs = {session.get_inputs()[0].name: input_img}
         raw_output = session.run(None, inputs)[0]
-        print(raw_output)
         probs = softmax(raw_output)
         top_idx = np.argmax(probs)
-        print(f"here is top_idx: {top_idx}")
-        print(emotion_table)
-        print(probs)
-        return jsonify({'emotion': emotion_table[top_idx],'confidence': float(probs[0][top_idx]),'raw_probabilities': probs[0].tolist()})
+        return jsonify({'face_data': face_data.tolist(), 'emotion': emotion_table[top_idx],'confidence': float(probs[0][top_idx]),'raw_probabilities': probs[0].tolist()})
 
     except Exception as e:
         print("Error:", e)

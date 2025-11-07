@@ -32,11 +32,40 @@ setInterval(() => {
   })
   .then(data => {
     overlay.textContent = data.emotion.charAt(0).toUpperCase() + data.emotion.slice(1);
+    const faceData = data.face_data;
 
-    // restart the pop animation
-    overlay.classList.remove('pop');
-    void overlay.offsetWidth;   // force reflow
-    overlay.classList.add('pop');
+    const container = document.querySelector(".video-wrapper");
+
+    const oldBoxes = container.querySelectorAll(".bounding-box");
+    oldBoxes.forEach(box => box.remove());
+
+
+    if (faceData && faceData.length > 0){
+      const x = faceData[0];
+      const y = faceData[1];
+      const w = faceData[2];
+      const h = faceData[3];
+
+      overlay.style.left = x + 'px';
+      overlay.style.top = y + 'px';
+      overlay.style.display = 'block';
+
+      const box = document.createElement("div");
+      box.className = "bounding-box"; 
+    
+      box.style.left   = x + 'px';   
+      box.style.top    = y + 'px'; 
+      box.style.width  = w + 'px';   
+      box.style.height = h + 'px';
+      // Add the new box div inside the container
+      container.appendChild(box);
+      // restart the pop animation
+      overlay.classList.remove('pop');
+      void overlay.offsetWidth;   // force reflow
+      overlay.classList.add('pop');
+    } else {
+      overlay.style.display = 'none';
+    }
 
   })
   .catch(err => {
@@ -44,4 +73,4 @@ setInterval(() => {
     overlay.textContent = 'Error';
     console.error('Detection error:', err);
   });
-}, 1000);
+}, 100);
