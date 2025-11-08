@@ -105,7 +105,7 @@ npm install
 npm start
 ```
 
-Your browser will open to `http://localhost:3000`, which will connect to the backend container running on port 5000.
+Your browser will open to `http://localhost:5000`, which will connect to the backend container running on port 5000.
 
 -----
 
@@ -165,7 +165,7 @@ npm start
 
 **5. View Your App**
 
-Open your browser and go to `http://localhost:3000`.
+Open your browser and go to `http://localhost:5000`.
 
 -----
 
@@ -205,6 +205,7 @@ This project involved several key design decisions to achieve a stable, real-tim
 
   * **Upgrade to a Modern Face Detector:** The current implementation uses OpenCV's classic Haar Cascades. A significant improvement would be to replace this with **YuNet**, a lightweight and highly accurate deep-learning detector from the OpenCV model zoo. This would dramatically improve detection accuracy with varied angles, lighting, and partial occlusions.
   * **Support Multiple Faces:** The backend could be refactored to *always* send a 2D array (a list of faces), e.g., `[[x,y,w,h], [x2,y2,w2,h2]]`. The frontend would then use a `forEach` loop to draw a box for every face detected.
+  * **Do Face Detection On Front End Using OpenCV** Doing face detection on the front end will enable to bounding box to be quicker even on an a weak computer as the bounding box will be handled by the front end. 
 
 -----
 
