@@ -64,7 +64,6 @@ def detect_emotion():
             return jsonify({'error': 'Invalid image'}), 400
         debug_img = np.squeeze(input_img) * 255  # (64, 64) grayscale image
         debug_img = debug_img.astype(np.uint8)
-        cv2.imwrite("static/debug_preprocessed.jpg", debug_img)
         inputs = {session.get_inputs()[0].name: input_img}
         raw_output = session.run(None, inputs)[0]
         probs = softmax(raw_output)
