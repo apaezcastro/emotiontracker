@@ -1,86 +1,94 @@
 const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
 const overlay = document.getElementById('overlay');
+const ctx = overlay.getContext('2d');
 
-// Access webcam
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => { video.srcObject = stream; })
-  .catch(err => {
-    overlay.textContent = 'Camera access denied';
-    console.error(err);
-  });
+const socket = io();
 
-let analyzing = false;
-setInterval(() => {
-  if (analyzing || video.videoWidth === 0) return;
-  analyzing = true;
+let currentEmotion = '';
+let currentBox = null;
+let lastEmit = 0;
+const EMIT_INTERVAL = 200;
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext('2d').drawImage(video, 0, 0);
+socket.on('emotion', ({ emotion }) => {
+  currentEmotion = emotion;
+});
 
-  const imageData = canvas.toDataURL('image/jpeg');
-  fetch('/detect_emotion', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ image: imageData })
-  })
-  .then(res => {
-    analyzing = false;
-    if (!res.ok) throw new Error(`Server error ${res.status}`);
-    return res.json();
-  })
-  .then(data => {
-    overlay.textContent = data.emotion.charAt(0).toUpperCase() + data.emotion.slice(1);
-    const faceData = data.face_data;
+// Draw loop — runs at full framerate, independent of detection speed
+function drawLoop() {
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-    const container = document.querySelector(".video-wrapper");
+  if (currentBox) {
+    const { x, y, width, height } = currentBox;
 
-    const oldBoxes = container.querySelectorAll(".bounding-box");
-    oldBoxes.forEach(box => box.remove());
+    // Bounding box
+    ctx.strokeStyle = '#00FF00';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, width, height);
 
-
-    if (faceData && faceData.length > 0){
-      const naturalWidth = video.videoWidth;
-      const displayedWidth = video.clientWidth;
-      // calculate scale factor between natural and displayed size
-      const scale = displayedWidth / naturalWidth;
-      const x_original = faceData[0];
-      const y_original = faceData[1];
-      const w_original = faceData[2];
-      const h_original = faceData[3];
-
-      // scale the face coordinates to match displayed size
-      const x = x_original * scale;
-      const y = y_original * scale;
-      const w = w_original * scale;
-      const h = h_original * scale;
-
-      overlay.style.left = x + 'px';
-      overlay.style.top = y + 'px';
-      overlay.style.display = 'block';
-
-      const box = document.createElement("div");
-      box.className = "bounding-box"; 
-    
-      box.style.left   = x + 'px';   
-      box.style.top    = y + 'px'; 
-      box.style.width  = w + 'px';   
-      box.style.height = h + 'px';
-      // Add the new box div inside the container
-      container.appendChild(box);
-      // restart the pop animation
-      overlay.classList.remove('pop');
-      void overlay.offsetWidth;   // force reflow
-      overlay.classList.add('pop');
-    } else {
-      overlay.style.display = 'none';
+    // Emotion label anchored to bounding box
+    if (currentEmotion) {
+      const label = currentEmotion.charAt(0).toUpperCase() + currentEmotion.slice(1);
+      ctx.font = 'bold 15px Arial, sans-serif';
+      const textW = ctx.measureText(label).width + 12;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+      ctx.fillRect(x, y - 26, textW, 24);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(label, x + 6, y - 8);
     }
+  }
 
-  })
-  .catch(err => {
-    analyzing = false;
-    overlay.textContent = 'Error';
-    console.error('Detection error:', err);
-  });
-}, 100);
+  requestAnimationFrame(drawLoop);
+}
+
+// Detection loop — runs as fast as face-api can process
+async function detectionLoop() {
+  const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
+
+  while (true) {
+    const detections = await faceapi.detectAllFaces(video, options);
+
+    if (detections.length > 0) {
+      currentBox = detections[0].box;
+
+      const now = Date.now();
+      if (now - lastEmit >= EMIT_INTERVAL) {
+        lastEmit = now;
+        emitFace(currentBox);
+      }
+    } else {
+      currentBox = null;
+    }
+  }
+}
+
+function emitFace(box) {
+  const tmp = document.createElement('canvas');
+  tmp.width = 64;
+  tmp.height = 64;
+  tmp.getContext('2d').drawImage(
+    video,
+    box.x, box.y, box.width, box.height,
+    0, 0, 64, 64
+  );
+  const base64 = tmp.toDataURL('image/jpeg', 0.8).split(',')[1];
+  socket.emit('frame', base64);
+}
+
+async function init() {
+  await faceapi.nets.tinyFaceDetector.loadFromUri(
+    'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model'
+  );
+
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  video.srcObject = stream;
+
+  await new Promise(resolve => video.addEventListener('loadedmetadata', resolve, { once: true }));
+
+  overlay.width = video.videoWidth;
+  overlay.height = video.videoHeight;
+
+  requestAnimationFrame(drawLoop);
+  detectionLoop();
+}
+
+init().catch(err => console.error('Init failed:', err));

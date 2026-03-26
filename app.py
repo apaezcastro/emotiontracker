@@ -1,78 +1,52 @@
-import numpy as np
-import onnxruntime as ort
-from flask import Flask, request, jsonify
 import base64
+import numpy as np
 import cv2
-from flask import send_from_directory
+import onnxruntime as ort
+from flask import Flask, render_template
+from flask_cors import CORS
+from flask_socketio import SocketIO, emit
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'emotion-tracker'
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins='*', async_mode='eventlet')
 
-# Load OpenCV's Haar cascade for face detection
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+session = ort.InferenceSession('emotion-ferplus-8-quant.onnx', providers=['CPUExecutionProvider'])
+input_name = session.get_inputs()[0].name
 
-# Load ONNX model
-session = ort.InferenceSession("emotion-ferplus-8-quant.onnx", providers=["CPUExecutionProvider"])
+EMOTIONS = ['neutral', 'happiness', 'surprise', 'sadness', 'anger', 'disgust', 'fear', 'contempt']
 
-emotion_table = {
-    0: 'neutral', 1: 'happiness', 2: 'surprise', 3: 'sadness',
-    4: 'anger', 5: 'disgust', 6: 'fear', 7: 'contempt'
-}
-
-def preprocess_image(image_bytes):
-    nparr = np.frombuffer(image_bytes, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
-    if img is None:
-        return None
-
-    # Detect face(s)
-    faces = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=5)
-    if len(faces) == 0:
-        return None  # No face detected
-
-    # Use the first detected face
-    x, y, w, h = faces[0]
-    face_img = img[y:y+h, x:x+w]
-
-    # Resize face to model input size
-    face_img = cv2.equalizeHist(face_img)
-    face_img = cv2.resize(face_img, (64, 64))
-    face_img = face_img.astype(np.float32)
-    face_img = face_img[np.newaxis, np.newaxis, :, :]  # shape: (1, 1, 64, 64)
-    return face_img, faces[0]
 
 def softmax(x):
-    e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
-    return e_x / e_x.sum(axis=1, keepdims=True)
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum()
+
+
+def preprocess(img_gray):
+    img = cv2.resize(img_gray, (64, 64))
+    return img.astype(np.float32)[np.newaxis, np.newaxis, :, :]  # [1,1,64,64]
 
 
 @app.route('/')
-def serve_index():
-    return send_from_directory('templates', 'index.html')
+def index():
+    return render_template('index.html')
 
-@app.route('/detect_emotion', methods=['POST'])
-def detect_emotion():
-    data = request.get_json()
-    if not data or 'image' not in data:
-        return jsonify({'error': 'No image provided'}), 400
 
+@socketio.on('frame')
+def handle_frame(data):
     try:
-        img_data = base64.b64decode(data['image'].split(",")[1])
-        with open("static/debug_frame.jpg", "wb") as f:
-            f.write(img_data)
-
-        input_img,face_data = preprocess_image(img_data)
-        if input_img is None:
-            return jsonify({'error': 'Invalid image'}), 400
-        debug_img = np.squeeze(input_img) * 255  # (64, 64) grayscale image
-        debug_img = debug_img.astype(np.uint8)
-        inputs = {session.get_inputs()[0].name: input_img}
-        raw_output = session.run(None, inputs)[0]
-        probs = softmax(raw_output)
-        top_idx = np.argmax(probs)
-        return jsonify({'face_data': face_data.tolist(), 'emotion': emotion_table[top_idx],'confidence': float(probs[0][top_idx]),'raw_probabilities': probs[0].tolist()})
-
+        img_bytes = base64.b64decode(data)
+        nparr = np.frombuffer(img_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+        if img is None:
+            return
+        inp = preprocess(img)
+        logits = session.run(None, {input_name: inp})[0][0]
+        emotion = EMOTIONS[int(np.argmax(softmax(logits)))]
+        emit('emotion', {'emotion': emotion})
     except Exception as e:
-        print("Error:", e)
-        return jsonify({'error': 'Detection failed'}), 500
+        emit('error', {'message': str(e)})
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, host='0.0.0.0', port=8000)
