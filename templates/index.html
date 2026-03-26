@@ -1,28 +1,22 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Emotion Detection App</title>
+  <title>Emotion Tracker</title>
   <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
   <header>
-    <h1>Emotion Detection - AP</h1>
+    <h1>Emotion Tracker</h1>
     <p>Possible emotions: <strong>neutral, happiness, surprise, sadness, anger, disgust, fear, contempt</strong></p>
   </header>
-
   <div class="video-wrapper">
-    <video id="video" autoplay playsinline></video>
-    <div id="overlay" class="overlay">Detecting...</div>
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
   </div>
-
-  <canvas id="canvas" style="display:none;"></canvas>
   <script src="/static/script.js"></script>
 </body>
 </html>
-<!-- templates/index.html -->
-<!-- This is the main HTML template for the Emotion Detection App -->
-<!-- It includes a video element for webcam feed, an overlay for detection status, and a canvas for drawing. -->
-<!-- The script.js file is linked at the end to ensure the DOM is fully loaded before executing JavaScript -->
